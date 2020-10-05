@@ -1,0 +1,75 @@
+CREATE DATABASE s298267;
+CREATE SCHEMA firma;
+CREATE ROLE ksiegowosc;
+GRANT SELECT ON ALL TABLES IN SCHEMA firma TO ksiegowosc;
+
+CREATE TABLE PRACOWNICY (id_pracownika SERIAL NOT NULL, imie VARCHAR(30) NOT NULL, nazwisko VARCHAR(30) NOT NULL, adres VARCHAR(30) NOT NULL, telefon VARCHAR(30) NOT NULL);
+CREATE TABLE godziny (id_godziny SERIAL NOT NULL, data DATE NOT NULL, liczba_godzin INT NOT NULL, id_pracownika INT NOT NULL);
+CREATE TABLE pensja_stanowisko (id_pensji SERIAL NOT NULL, stanowisko VARCHAR(100) NOT NULL, kwota FLOAT(2) NOT NULL);
+CREATE TABLE premia(id_premii SERIAL NOT NULL, rodzaj VARCHAR(100) NOT NULL, kwota FLOAT(2) NOT NULL);
+CREATE TABLE wynagrodzenie(id_wynagrodzenia SERIAL NOT NULL, data DATE NOT NULL, id_pracownika INT NOT NULL, id_godziny INT NOT NULL, id_pensji INT NOT NULL, id_premii INT NOT NULL);
+
+# klucze glowne
+ALTER TABLE pracownicy ADD PRIMARY KEY (id_pracownika);
+ALTER TABLE godziny ADD PRIMARY KEY (id_godziny);
+ALTER TABLE pensja_stanowisko ADD PRIMARY KEY (id_pensji);
+ALTER TABLE premia ADD PRIMARY KEY (id_premii);
+ALTER TABLE wynagrodzenie ADD PRIMARY KEY (id_wynagrodzenia);
+
+# klucze obce
+ALTER TABLE godziny ADD FOREIGN KEY (id_pracownika) REFERENCES pracownicy(id_pracownika);
+ALTER TABLE wynagrodzenie ADD FOREIGN KEY (id_pracownika) REFERENCES pracownicy(id_pracownika);
+ALTER TABLE wynagrodzenie ADD FOREIGN KEY (id_godziny) REFERENCES godziny(id_godziny);
+ALTER TABLE wynagrodzenie ADD FOREIGN KEY (id_pensji) REFERENCES pensja_stanowisko(id_pensji);
+ALTER TABLE wynagrodzenie ADD FOREIGN KEY (id_premii) REFERENCES premia(id_premii);
+
+# indexy 
+CREATE INDEX pensja_stanowisko_index ON pensja_stanowisko(kwota);
+CREATE INDEX premia_kwota_index ON premia(kwota);
+
+# komentarze
+COMMENT ON TABLE pracownicy IS 'Tabela pracownicy';
+COMMENT ON TABLE godziny IS 'Tabela godziny';
+COMMENT ON TABLE pensja_stanowisko IS 'Tabela pensja_stanowisko';
+COMMENT ON TABLE premia IS 'Tabela premia';
+COMMENT ON TABLE wynagrodzenie IS 'Tabela wynagrodzenie';
+
+# zad 6
+ALTER TABLE godziny ADD COLUMN miesiac DATE NOT NULL;
+ALTER TABLE godziny ADD COLUMN numer_tygodnia DATE NOT NULL;
+ALTER TABLE wynagrodzenie ALTER COLUMN data TYPE TEXT;
+UPDATE premia SET kwota = 0 WHERE rodzaj is NULL;
+
+# wypelnianie
+INSERT INTO pracownicy VALUES (1, 'Jan', 'Kowalski', 'Kobierzynska 3', '555-555-555');
+INSERT INTO pracownicy (imie, nazwisko, adres, telefon) VALUES ('Janek', 'Kowalski', 'Rynek 5', '555-666-777');
+INSERT INTO pracownicy (imie, nazwisko, adres, telefon) VALUES ('Wieslaw', 'Paleta', 'Warszawa 10', '999-666-777');
+INSERT INTO pracownicy (imie, nazwisko, adres, telefon) VALUES ('Janina', 'Paleta', 'Debica', '666-666-666');
+INSERT INTO pracownicy (imie, nazwisko, adres, telefon) VALUES ('Olga', 'Koza', 'Morawica', '123-456-789');
+INSERT INTO pracownicy (imie, nazwisko, adres, telefon) VALUES ('Helga', 'Abecd', 'Berlin', '862-456-129');
+INSERT INTO pracownicy (imie, nazwisko, adres, telefon) VALUES ('Dzony', 'Kojony', 'Krakow', '321-123-321');
+INSERT INTO pracownicy (imie, nazwisko, adres, telefon) VALUES ('Shrek', 'Kojony', 'Krakow', '321-888-999');
+INSERT INTO pracownicy (imie, nazwisko, adres, telefon) VALUES ('Inlander', 'Czeski', 'Krakow', '512-387-193');
+INSERT INTO pracownicy (imie, nazwisko, adres, telefon) VALUES ('Koza', 'Woza', 'Debica', '393-493-193');
+
+INSERT INTO premia (rodzaj, kwota) VALUES ('premia1', 20.5);
+INSERT INTO premia (rodzaj, kwota) VALUES ('premia2', 500);
+INSERT INTO premia (rodzaj, kwota) VALUES ('premia3', 130);
+INSERT INTO premia (rodzaj, kwota) VALUES ('brak', 0);
+INSERT INTO premia (rodzaj, kwota) VALUES ('premia4', 150);
+INSERT INTO premia (rodzaj, kwota) VALUES ('premia5', 350);
+INSERT INTO premia (rodzaj, kwota) VALUES ('premia6', 950);
+INSERT INTO premia (rodzaj, kwota) VALUES ('premia7', 15000);
+INSERT INTO premia (rodzaj, kwota) VALUES ('premia8', 3500);
+INSERT INTO premia (rodzaj, kwota) VALUES ('premia9', 700);
+
+INSERT INTO pensja_stanowisko (stanowisko,  kwota) VALUES ('murarz', 2400);
+INSERT INTO pensja_stanowisko (stanowisko,  kwota) VALUES ('tynkarz', 2000);
+INSERT INTO pensja_stanowisko (stanowisko,  kwota) VALUES ('akrobata', 9000);
+INSERT INTO pensja_stanowisko (stanowisko,  kwota) VALUES ('mechanik', 3000);
+INSERT INTO pensja_stanowisko (stanowisko,  kwota) VALUES ('sprzedawca', 2500);
+INSERT INTO pensja_stanowisko (stanowisko,  kwota) VALUES ('grzybiarz', 300);
+INSERT INTO pensja_stanowisko (stanowisko,  kwota) VALUES ('500plusior', 500);
+INSERT INTO pensja_stanowisko (stanowisko,  kwota) VALUES ('programista15k', 15000);
+INSERT INTO pensja_stanowisko (stanowisko,  kwota) VALUES ('barman', 3500);
+INSERT INTO pensja_stanowisko (stanowisko,  kwota) VALUES ('rolnik', 1000);
